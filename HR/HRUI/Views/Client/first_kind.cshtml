@@ -1,0 +1,121 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>first_kind</title>
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css">
+    <script type="text/javascript"
+            src="../../javascript/comm/comm.js">
+    </script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/vue-2.4.0.js"></script>
+</head>
+<body>
+    <div id="div1">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <font color="black">
+                            您正在做的业务是：人力资源--客户化设置--人力资源档案管理设置--I级机构设置
+                        </font>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        @Html.ActionLink("添加", "first_kind_register", new { }, new { @class = "BUTTON_STYLE1" })
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="20%" class="TD_STYLE1">
+                        I级机构编号
+                    </td>
+                    <td width="20%" class="TD_STYLE1">
+                        I级机构名称
+                    </td>
+                    <td width="25%" class="TD_STYLE1">
+                        薪酬发放责任人编号
+                    </td>
+                    <td width="25%" class="TD_STYLE1">
+                        销售责任人编号
+                    </td>
+                    <td width="5%" class="TD_STYLE1">
+                        变更
+                    </td>
+                    <td width="5%" class="TD_STYLE1">
+                        删除
+                    </td>
+                </tr>
+                <tr v-for="(item,index) in dt" :key="index">
+                    <td width="20%" class="TD_STYLE1">
+                        {{item.first_kind_id}}
+                    </td>
+                    <td width="20%" class="TD_STYLE1">
+                        {{item.first_kind_name}}
+                    </td>
+                    <td width="25%" class="TD_STYLE1">
+                        {{item.first_kind_salary_id}}
+                    </td>
+                    <td width="25%" class="TD_STYLE1">
+                        {{item.first_kind_sale_id}}
+                    </td>
+                    <td width="5%" class="TD_STYLE1">
+                        <a v-bind:href="'/Client/first_kind_change/'+[item.ffk_id]">变更</a>
+                    </td>
+                    <td width="5%" class="TD_STYLE1">
+                        <a v-on:click="Del([item.ffk_id])">删除</a>
+                    </td>
+                </tr>
+            </table>
+    </div>
+    <script type="text/javascript">
+       var vm=new Vue({
+           el: "#div1",
+           data: {
+               dt: []
+           },
+           methods: {
+               Load: function () {
+                   var t = this;
+                   $.ajax({
+                       type: "post",
+                       url: "/Client/FKSel",
+                       success: function (date) {
+                           t.dt = eval("(" + date + ")");
+                       }
+                   })
+               },
+               Del: function (id) {
+                   var t = this;
+                   if (confirm("确认删除吗?")) {
+                       $.ajax({
+                           type: "post",
+                           data: "id=" + id,
+                           url: "/Client/fkDel",
+                           success: function (date) {
+                               if (date == "1") {
+                                   alert("删除成功");
+                                   t.Load();
+                               }
+                           }
+                       })
+                   }
+               }
+           },
+           mounted: function () {
+               this.Load();
+           }
+       })
+    </script>
+</body>
+</html>

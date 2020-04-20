@@ -1,0 +1,299 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+@using HRModel
+@model salary_standardModel
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>薪酬标准登记</title>
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/comm/comm.js"></script>
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+    <style>
+        table tr td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    @using (Ajax.BeginForm("salarystandard_register", "salaryCriterion", new AjaxOptions() { HttpMethod = "Post" }))
+    {
+        <table width="100%">
+            <tr>
+                <td>
+                    <font color="black">
+                        您正在做的业务是：人力资源--薪酬标准管理--薪酬标准登记
+                    </font>
+                </td>
+            </tr>
+            <tr>
+                <th align="right">
+                    <input type="submit"onclick="return Tj()"  value="提 交" class="BUTTON_STYLE1">
+                    <input type="reset" value="返 回" class="BUTTON_STYLE1">
+                    <input type="hidden" value="@ViewBag.ListCount " id="Count"/>
+                </th>
+            </tr>
+        </table>
+        <table id="stable" width="100%" border="1" cellpadding=0 cellspacing=1
+               bordercolorlight=#848284 bordercolordark=#eeeeee
+               class="TABLE_STYLE1">
+            <tr>
+                <td width="74" class="TD_STYLE1" style="text-align:center">
+                    薪酬标准编号
+                </td>
+                <td width="168" class="TD_STYLE2">
+                    <input type="hidden" id="name" value="@ViewBag.Name"/>
+                    @Html.TextBoxFor(e => e.standard_id, new { @readonly = "readonly", @class = "INPUT_STYLE2",Value= ViewBag.standard_id })
+                </td>
+                <td width="83" class="TD_STYLE1" style="text-align:center">
+                    薪酬标准名称
+                </td>
+                <td width="171" class="TD_STYLE2">
+                    @Html.TextBoxFor(e => e.standard_name, new { @class = "INPUT_STYLE2", autocomplete = "off" })
+                    @Html.ValidationMessageFor(e => e.standard_name, null, new { @style = "color:red;font-size:13px;" })
+
+                </td>
+                <td width="170" class="TD_STYLE1" style="text-align:center">
+                    薪酬总额
+                </td>
+                <td width="138" class="TD_STYLE2">
+                    @Html.TextBoxFor(e => e.salary_sum, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                </td>
+                <td width="103" class="TD_STYLE1">
+                    &nbsp;
+                </td>
+                <td width="95" height="26" class="TD_STYLE2">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="TD_STYLE1" style="text-align:center">
+                    制定人
+                </td>
+                <td class="TD_STYLE2">
+                    @Html.TextBoxFor(e => e.designer, new { @class = "INPUT_STYLE2", autocomplete = "off"})
+                    @Html.ValidationMessageFor(e => e.designer, null, new { @style = "color:red;font-size:13px;" })
+                </td>
+                <td class="TD_STYLE1" style="text-align:center">
+                    登记人
+                </td>
+                <td class="TD_STYLE2">
+                    @Html.TextBoxFor(e => e.register, new { @class = "INPUT_STYLE2", autocomplete = "off" })
+                    @Html.ValidationMessageFor(e => e.register, null, new { @style = "color:red;font-size:13px;" })
+                </td>
+                <td class="TD_STYLE1" style="text-align:center">
+                    登记时间
+                </td>
+                <td class="TD_STYLE2">
+                    @Html.TextBoxFor(e => e.regist_time, new { Value = ViewBag.A, @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                </td>
+                <td class="TD_STYLE1">
+                    &nbsp;
+                </td>
+                <td class="TD_STYLE2">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td class="TD_STYLE1">
+                    备注
+                </td>
+                <td colspan="7" class="TD_STYLE2">
+                    @Html.TextAreaFor(e => e.remark, new { @rows = "4", @class = "TEXTAREA_STYLE1" })
+                </td>
+            </tr>
+            <tr class="TD_STYLE1">
+                <td align="center" style="text-align:center">
+                    序号
+                </td>
+                <td colspan="3" style="text-align:center">
+                    薪酬项目名称
+                </td>
+                <td style="text-align:center">
+                    金额
+                </td>
+                <td colspan="3">
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <div style="margin-top:5px;font-size:15px" id="fx">
+            <input type="checkbox" id="selectAll" name="selectAll" />全选&nbsp;<input type="button" value="请选择薪酬组合" onclick="item()" /><br />
+            @for (int i = 0; i < Model.list.Count; i++)
+            {
+                @Html.HiddenFor(e => e.list[i].Myitem_name)
+                @Html.HiddenFor(e => e.list[i].item_id)
+                @Html.Label(Model.list[i].Myitem_name)
+                @Html.CheckBoxFor(e => e.list[i].AddCustomer, new { @onclick = "che(this)" })
+            }
+        </div>
+    }
+        <script type="text/javascript">
+            var textCount = $("#Count").val();
+            var num = Number(textCount);
+        var arrName = new Array();
+        var arrId = new Array();
+        document.getElementById("salary_sum").value = "0.00";
+        function countMoney(obj,o)
+        {
+            if (isNaN(o.value) || o.value<0) {
+                o.value = "0.00";
+                return;
+            }
+            var sum = 0;
+            for (var i = 0; i < obj; i++) {
+                var salary = document.getElementById("lists_"+ i +"__salary").value;
+                if (salary == "") {
+                    salary = "0.00";
+                }
+                sum = Number(sum) + Number(salary);
+
+            }
+            $("#salary_sum").val(sum);
+        }
+        function time() {
+            var tdate = document.getElementById("regist_time");
+            var d = new Date();
+            var y = d.getFullYear();
+            var moth = d.getMonth() + 1;
+            var date = d.getDate();
+            var h = d.getHours();
+            var m = d.getMinutes();
+            var s = d.getSeconds();
+            var hh = 20 - 1 - h;
+            var mm = 60 - 1 - m;
+            var ss = 60 - s;
+            if (hh > 0) {
+                mm = mm + 60 * hh;
+            }
+            if (moth < 10) {
+                moth = "0" + moth;
+            }
+            if (date < 10) {
+                date = "0" + date;
+            }
+            if (h < 10) {
+                h = "0" + h;
+            }
+            if (m < 10) {
+                m = "0" + m;
+            }
+            if (s < 10) {
+                s = "0" + s;
+            }
+            if (mm < 10) {
+                mm = "0" + mm;
+            }
+            if (ss < 10) {
+                ss = "0" + ss;
+            }
+            tdate.value = y + "-" + moth + "-" + date + " " + h + ":" + m + ":" + s;
+        }
+        window.onload = time;
+            var out = window.setInterval(time, 1000);
+            function item() {
+                if (num == "") {
+                alert("请选择薪酬组合");
+            } else {
+                $("#fx").hide();
+                for (var i = 0; i < num; i++) {
+                    var id = arrId[i].slice();
+                    var td1 = ' <td align="center">' + id + '<br /><input data-val="true" data-val-number="字段 item_id 必须是一个数字。" data-val-required="item_id 字段是必需的。" id="lists_' + i + '__item_id" name="lists[' + i + '].item_id" type="hidden" value="' + id + '"></td>';
+
+                    var name = arrName[i].slice();
+                    var td2 = '<td colspan="3" align="center">' + name + '<input id="lists_' + i + '__item_name" name="lists[' + i + '].item_name" type="hidden" value="' + name + '"><br /></td>';
+
+                    var td3 = ' <td align="center"><input autocomplete="off" class="INPUT_STYLE2" data-val="true" data-val-number="字段 salary 必须是一个数字。" data-val-required="salary 字段是必需的。" id="lists_' + i + '__salary" name="lists[' + i + '].salary"  onkeyup="countMoney(' + num + ',lists_' + i + '__salary)"  type="text" value="0.00" onkeyup="countMoney(' + num + ',lists_' + i + '__salary)"><span class="field-validation-valid" data-valmsg-for="lists[' + i + '].salary" data-valmsg-replace="true" style="color:red;font-size:13px;"></span><br/></td> <td colspan="3">&nbsp;</td >';
+
+                    $("#stable").append("<tr class='TD_STYLE2'>" + td1 + td2 + td3 + "</tr>");
+                }
+            }
+        }
+        $('input[name="selectAll"]').on("click", function () {
+            if ($(this).is(':checked')) {
+                $("input[type='checkbox']").each(function () {
+                    this.checked = true;
+                    num =@ViewBag.Count;
+                })
+                 for (var i = 0; i < @ViewBag.Count; i++) {
+                     var sname = $("input[name='list[" + (i) + "].Myitem_name']").val();
+                     var sid = $("input[name='list[" + (i) + "].item_id']").val();
+                     arrId[i] = sid;
+                     arrName[i] = sname;
+                }
+            }
+            else {
+                $("input[type='checkbox']").each(function () {
+                    this.checked = false;
+                    num = 0;
+                    arrId = [];
+                    arrName = [];
+                })
+            }
+        });
+        function che(a) {
+            if ($(a).is(':checked')) {
+                var name = $(a).prev().prev().prev().val();
+                var id = $(a).prev().prev().val();
+                num++;
+                if (num ==@ViewBag.Count) {
+                    $('input[name="selectAll"]').each(function () {
+                        this.checked = true;
+                    })
+                }
+                arrId[num-1] = id;
+                arrName[num-1] = name;
+            } else {
+                var name = $(a).prev().prev().prev().val();
+                var id = $(a).prev().prev().val();
+                num--;
+                if (num < @ViewBag.Count) {
+                    $('input[name="selectAll"]').each(function () {
+                        this.checked = false;
+                    })
+                }
+                arrId.splice($.inArray(id, arrId), 1);
+                arrName.splice($.inArray(name, arrName), 1);
+            }
+        }
+        $(document).ready(function () {
+            var name=$("#name").val();
+            $("#designer").val(name);
+            $("#register").val(name);
+            })
+            function Tj() {
+                var sum = $("#salary_sum").val();
+                if (num == 0) {
+                    alert("请选择薪酬组合");
+                    return false;
+                } else {
+                    if (sum == "0.00") {
+                        alert("1");
+                        return false;
+                    } else {
+                        return true;
+                    }
+                }
+            }
+            $(document).ready(function () {
+                if (num != "") {
+                    num = 0;
+                    for (var i = 0; i < @ViewBag.Count; i++) {
+                        var $id = $("input[id='list_" + (i) + "__AddCustomer']");
+                        if ($id.is(":checked")) {
+                            var sname = $("input[name='list[" + (i) + "].Myitem_name']").val();
+                            var sid = $("input[name='list[" + (i) + "].item_id']").val();
+                            arrId[num] = sid;
+                            arrName[num] = sname;
+                            num++
+                        }
+                    }
+                }
+            })
+        </script>
+</body>
+</html>

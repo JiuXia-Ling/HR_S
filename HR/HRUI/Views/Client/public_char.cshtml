@@ -1,0 +1,180 @@
+﻿
+
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>public_char</title>
+    <link rel="stylesheet"
+          href="../../css/table.css" type="text/css">
+    <script type="text/javascript"
+            src="../../javascript/comm/comm.js">
+    </script>
+    <script src="~/Scripts/vue-2.4.0.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+    <div id="div1">
+        <table width="100%">
+            <tr>
+                <td>
+                    <font color="black">
+                        您正在做的业务是：人力资源--客户化设置--人力资源档案管理设置--公共属性设置
+                    </font>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    @Html.ActionLink("添加", "public_char_add", new { }, new { @class = "BUTTON_STYLE1" })
+                </td>
+            </tr>
+        </table>
+        <table width="100%" border="1" cellpadding=0 cellspacing=1
+               bordercolorlight=#848284 bordercolordark=#eeeeee
+               class="TABLE_STYLE1">
+            <tr>
+                <td width="49%" class="TD_STYLE1">
+                    属性种类
+                </td>
+                <td width="44%" class="TD_STYLE1">
+                    属性名称
+                </td>
+                <td width="7%" class="TD_STYLE1" align="center">
+                    删除
+                </td>
+            </tr>
+            <tr v-for="(item,index) in dt" :key="index">
+                <td class="TD_STYLE2">
+                    {{item.attribute_name}}
+                </td>
+                <td class="TD_STYLE2">
+                    {{item.attribute_kind}}
+                </td>
+                <td class="TD_STYLE2" align="center">
+                    <a v-on:click="Del([item.pbc_id])">删除</a>
+                </td>
+            </tr>
+        </table>
+        <div id="pageDiv" style="margin-top:10px">
+            <form id="form3">
+                <div id="pageDiv" style="height:40px;">
+                    <div id="leftPage" style="font-size:15px;float:left;margin-top:1px;font-size:14px;">
+                        共有{{rows}}条记录，当前第{{currentPage}}/{{pages}}页
+                    </div>
+                    <div id="rightPage">
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" v-on:click="btnfirst()" value="首页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnback()" value="上一页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnnext()" value="下一页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnlast()" value="末页" style="height:23px" />&nbsp;&nbsp;
+                        转到&nbsp;<input type="text" size="1" style="text-align:center" autocomplete="off" id="num" name="num" />&nbsp;页&nbsp;<input type="submit" v-on:click="tz()" value="跳转" style="height:22px" />
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#div1",
+            data: {
+                dt: [],
+                currentPage: 1,
+                where: "",
+                pages: 0,
+                rows: 0,
+            },
+            methods: {
+                Load: function () {
+                    var t = this;
+                    $.ajax({
+                        type: "post",
+                        url: "/Client/Select6",
+                        data: "currentPage=" + t.currentPage,
+                        success: function (date) {
+                            var arr = eval("(" + date + ")");
+                            t.pages = arr["pages"];
+                            t.rows = arr["rows"];
+                            t.dt = arr["dt"];
+                        }
+                    })
+                },
+                btnlast: function () {
+                    this.currentPage = this.pages;
+                    this.Load();
+                },//末页
+                btnfirst: function () {
+                    this.currentPage = 1;
+                    this.Load();
+                },//首页
+                btnnext: function () {
+                    if (this.currentPage < this.pages) {
+                        this.currentPage++;
+                    } else {
+                        this.currentPage = this.pages;
+                    }
+                    this.Load();
+                },//下一页
+                btnback: function () {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    } else {
+                        this.currentPage = 1
+                    }
+                    this.Load();
+                },//上一页
+                tz: function () {
+                    var t = this;
+                    $("#form3").validate({
+                        rules: {
+                            num: {
+                                required: true,
+                                digits: true
+                            }
+                        },
+                        messages: {
+                            num: {
+                                required: "请输入整数",
+                                digits: "请输入整数"
+                            }
+                        },
+                        submitHandler: function (form) {
+                            var num = $("#num").val();
+                            if (num <= 0) {
+                                num = 1;
+                            } else if (num > t.pages) {
+                                num = t.pages;
+                            }
+                            $("#num").val(num);
+                            t.currentPage = num;
+                            t.Load();
+
+                        }
+                    })//跳转
+                },//跳转
+                Del: function (id) {
+                    var t = this;
+                    if (confirm("确认删除吗?")) {
+                        $.ajax({
+                            type: "post",
+                            data: "id=" + id,
+                            url: "/Client/cpcDel",
+                            success: function (date) {
+                                if (date == "1") {
+                                    alert("删除成功");
+                                    t.Load();
+                                }
+                            }
+                        })
+                    }
+                }
+            },
+            mounted: function () {
+                this.Load();
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>salarystandard_check_list</title>
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+    <script src="~/Scripts/vue-2.4.0.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+</head>
+<body>
+    <div id="div1">
+        <form method="post" action="/HR_Fist/salaryCriterion/salaryCriterionAction!initSalaryStandardCheckList.action">
+            <table width="100%">
+                <tr>
+                    <td>
+                        <font color="black">您正在做的业务是:人力资源管理--薪酬标准管理--薪酬标准登记复核</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        当前等待复核的薪酬标准总数:
+                        {{rows}}
+                        例
+                    </td>
+                </tr>
+            </table>
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="18%" class="TD_STYLE1" style="text-align:center">
+                        <span>薪酬标准编号</span>
+                    </td>
+                    <td width="19%" class="TD_STYLE1" style="text-align:center">
+                        <span>薪酬标准名称</span>
+                    </td>
+                    <td width="16%" class="TD_STYLE1" style="text-align:center">
+                        <span>制定人</span>
+                    </td>
+                    <td width="30%" class="TD_STYLE1" style="text-align:center">
+                        <span>登记时间</span>
+                    </td>
+                    <td width="13%" class="TD_STYLE1" style="text-align:center">
+                        薪酬总额
+                    </td>
+                </tr>
+                <tr v-for="(item,index) in dt" :key="index" class="TD_STYLE2">
+                    <td style="text-align:center">
+                        <a v-bind:href="'/salaryCriterion/salarystandard_query/'+[item.standard_id]">{{item.standard_id}}</a>
+                    </td>
+                    <td style="text-align:center">
+                        {{item.standard_name}}
+                    </td>
+                    <td style="text-align:center">
+                        {{item.designer}}
+                    </td>
+                    <td style="text-align:center">
+                        {{item.regist_time|cdate}}
+                    </td>
+                    <td style="text-align:center">
+                        {{item.salary_sum}}
+                    </td>
+                </tr>
+            </table>
+            <div id="pageDiv" style="margin-top:10px;margin-left:380px">
+                    <div id="pageDiv" style="height:40px;">
+                        <div id="leftPage" style="font-size:15px;float:left;margin-top:1px;font-size:14px;">
+                            共有{{rows}}条记录，当前第{{currentPage}}/{{pages}}页
+                        </div>
+                        <div id="rightPage">
+                            &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" v-on:click="btnfirst()" value="首页" style="height:23px" />&nbsp;&nbsp;
+                            <input type="button" v-on:click="btnback()" value="上一页" style="height:23px" />&nbsp;&nbsp;
+                            <input type="button" v-on:click="btnnext()" value="下一页" style="height:23px" />&nbsp;&nbsp;
+                            <input type="button" v-on:click="btnlast()" value="末页" style="height:23px" />&nbsp;&nbsp;
+                            转到&nbsp;<input type="text" size="1" style="text-align:center" autocomplete="off" id="num" name="num" v-on:keyup="zhi(num)"/>&nbsp;页&nbsp;<input type="button" v-on:click="tz()" value="跳转" style="height:22px" />
+                        </div>
+                    </div>
+            </div>
+</div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#div1",
+            data: {
+                dt: [],
+                currentPage: 1,
+                where: "",
+                pages: 0,
+                rows: 0,
+            },
+            methods: {
+                Load: function () {
+                    var t = this;
+                    $.ajax({
+                        type: "post",
+                        url: "/salaryCriterion/SelectSQ",
+                        data: "CountIndex=" + t.currentPage +"&&pageSize=6",
+                        success: function (date) {
+                            var arr = eval("(" + date + ")");
+                            t.pages = arr["pages"];
+                            t.rows = arr["rows"];
+                            t.dt = arr["dt"];
+                        }
+                    })
+                },
+                btnlast: function () {
+                    this.currentPage = this.pages;
+                    this.Load();
+                },//末页
+                btnfirst: function () {
+                    this.currentPage = 1;
+                    this.Load();
+                },//首页
+                btnnext: function () {
+                    if (this.currentPage < this.pages) {
+                        this.currentPage++;
+                    } else {
+                        this.currentPage = this.pages;
+                    }
+                    this.Load();
+                },//下一页
+                btnback: function () {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    } else {
+                        this.currentPage = 1
+                    }
+                    this.Load();
+                },//上一页
+                tz: function () {
+                    var t = this;
+                    var num = $("#num").val();
+                    t.currentPage = num;
+                    t.Load();
+                },//跳转
+                zhi: function (o) {
+                    var t = this;
+                    var k=$("#num").val();
+                    if (!isNaN(k)) {
+                        if (k > t.pages) {
+                            $("#num").val(t.pages);
+                        }
+                    } else {
+                        $("#num").val("1");
+                    }
+                },//跳转输入判断
+            },
+            mounted: function () {
+                this.Load();
+            },
+            filters: {
+                cdate: function (zhi) {
+                    var dt = new Date(zhi);
+                    var y = dt.getFullYear();//获取年
+                    var m = dt.getMonth() + 1;//获取月份
+                    var d = dt.getDate();//获取天
+                    var h = dt.getHours();
+                    var f = dt.getSeconds();
+                    var s = dt.getMinutes();
+                    return y + "-" + m + "-" + d + " " + h + ":" + f + ":"+s;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

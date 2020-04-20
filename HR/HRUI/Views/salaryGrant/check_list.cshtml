@@ -1,0 +1,168 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>check_list</title>
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/vue-2.4.0.js"></script>
+    <style>
+        table tr td{
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div id="div1">
+            <table width="100%">
+                <tr>
+                    <td style="text-align:left;">
+                        <font color="black">您正在做的业务是:人力资源管理--薪酬发放管理--薪酬发放登记审核</font>
+                        <br /><br /><br />
+                    </td>
+                </tr>
+            </table>
+
+            <table width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="10%" class="TD_STYLE1">
+                        <span>薪酬发放编号</span>
+                    </td>
+                    <td width="20%" class="TD_STYLE1">
+                        <span>I级机构名称</span>
+                    </td>
+                    <td width="20%" class="TD_STYLE1">
+                        <span>II级机构名称</span>
+                    </td>
+                    <td width="20%" class="TD_STYLE1">
+                        <span>III级机构名称</span>
+                    </td>
+                    <td width="10%" class="TD_STYLE1">
+                        <span>人数</span>
+                    </td>
+                    <td width="10%" class="TD_STYLE1">
+                        基本薪酬总额(元)
+                    </td>
+                    <td width="10%" class="TD_STYLE1">
+                        复核
+                    </td>
+                </tr>
+                <tr class="TD_STYLE2" v-for="(item,index) in dt">
+                    <td> {{item.salary_grant_id}}</td>
+                    <td> {{item.first_kind_name}}</td>
+                    <td> {{item.second_kind_name}}</td>
+                    <td> {{item.third_kind_name}}</td>
+                    <td> {{item.human_amount}}</td>
+                    <td> {{item.salary_standard_sum}}</td>
+                    <td><a v-bind:href="'/salaryGrant/check/'+[item.salary_grant_id ]">复核</a></td>
+                </tr>
+            </table>
+            <div id="pageDiv" style="margin-top:10px;margin-left:380px">
+                <div id="pageDiv" style="height:40px;">
+                    <div id="leftPage" style="font-size:15px;float:left;margin-top:1px;font-size:14px;">
+                        共有{{rows}}条记录，当前第{{currentPage}}/{{pages}}页
+                    </div>
+                    <div id="rightPage">
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" v-on:click="btnfirst()" value="首页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnback()" value="上一页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnnext()" value="下一页" style="height:23px" />&nbsp;&nbsp;
+                        <input type="button" v-on:click="btnlast()" value="末页" style="height:23px" />&nbsp;&nbsp;
+                        转到&nbsp;<input type="text" size="1" style="text-align:center" autocomplete="off" id="num" name="num" v-on:keyup="zhi(num)" />&nbsp;页&nbsp;<input type="button" v-on:click="tz()" value="跳转" style="height:22px" />
+                    </div>
+                </div>
+            </div>
+</div>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: "#div1",
+            data: {
+                dt: [],
+                currentPage: 1,
+                where: "",
+                pages: 0,
+                rows: 0,
+            },
+            methods: {
+                Load: function () {
+                    var t = this;
+                    $.ajax({
+                        type: "post",
+                        url: "/salaryGrant/SelectSG",
+                        data: "CountIndex=" + t.currentPage + "&&pageSize=5",
+                        success: function (date) {
+                            var arr = eval("(" + date + ")");
+                            t.pages = arr["pages"];
+                            t.rows = arr["rows"];
+                            t.dt = arr["dt"];
+                        }
+                    })
+                },
+                btnlast: function () {
+                    this.currentPage = this.pages;
+                    this.Load();
+                },//末页
+                btnfirst: function () {
+                    this.currentPage = 1;
+                    this.Load();
+                },//首页
+                btnnext: function () {
+                    if (this.currentPage < this.pages) {
+                        this.currentPage++;
+                    } else {
+                        this.currentPage = this.pages;
+                    }
+                    this.Load();
+                },//下一页
+                btnback: function () {
+                    if (this.currentPage > 1) {
+                        this.currentPage--;
+                    } else {
+                        this.currentPage = 1
+                    }
+                    this.Load();
+                },//上一页
+                tz: function () {
+                    var t = this;
+                    var num = $("#num").val();
+                    t.currentPage = num;
+                    t.Load();
+                },//跳转
+                zhi: function (o) {
+                    var t = this;
+                    var k = $("#num").val(); if (!isNaN(k)) {
+                        if (k > t.pages) {
+                            $("#num").val(t.pages);
+                        }
+                    }
+                    else {
+                        $("#num").val("1");
+                    }
+                },//跳转输入判断
+            },
+            mounted: function () {
+                this.Load();
+            },
+            filters: {
+                cdate: function (zhi) {
+                    var dt = new Date(zhi);
+                    var y = dt.getFullYear();//获取年
+                    var m = dt.getMonth() + 1;//获取月份
+                    var d = dt.getDate();//获取天
+                    var h = dt.getHours();
+                    var f = dt.getSeconds();
+                    var s = dt.getMinutes();
+                    return y + "-" + m + "-" + d + " " + h + ":" + f + ":" + s;
+                }
+            }
+        })
+    </script>
+</body>
+</html>

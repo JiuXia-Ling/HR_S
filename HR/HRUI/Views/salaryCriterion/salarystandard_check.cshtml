@@ -1,0 +1,203 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+@using HRModel
+@model salary_standardModel
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>salarystandard_check</title>
+    <link rel="stylesheet" href="../../css/table.css" type="text/css" />
+    <script type="text/javascript" src="../../javascript/comm/comm.js"></script>
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+</head>
+<body>
+    <div>
+        @using (Ajax.BeginForm("salarystandard_check", "salaryCriterion", new AjaxOptions() { HttpMethod = "Post" }))
+        {
+            <table width="100%">
+                <tr>
+                    <td>
+                        <font color="black">
+                            您正在做的业务是:人力资源管理--薪酬标准管理--薪酬标准登记复核
+                        </font>
+                    </td>
+                </tr>
+                <tr>
+                    <th align="right">
+                        <input type="submit" value="复核通过" class="BUTTON_STYLE1">
+                        <input type="reset" value="返 回" class="BUTTON_STYLE1">
+                    </th>
+                </tr>
+            </table>
+            <table id="stable" width="100%" border="1" cellpadding=0 cellspacing=1
+                   bordercolorlight=#848284 bordercolordark=#eeeeee
+                   class="TABLE_STYLE1">
+                <tr>
+                    <td width="74" class="TD_STYLE1" style="text-align:center">
+                        薪酬标准编号
+                    </td>
+                    <td width="168" class="TD_STYLE2">
+                        @Html.HiddenFor(e => e.ssd_id)
+                        @Html.TextBoxFor(e => e.standard_id, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                    </td>
+                    <td width="83" class="TD_STYLE1" style="text-align:center">
+                        薪酬标准名称
+                    </td>
+                    <td width="171" class="TD_STYLE2">
+                        @Html.TextBoxFor(e => e.standard_name, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(e => e.standard_name, null, new { @style = "color:red;font-size:13px;" })
+                    </td>
+                    <td width="170" class="TD_STYLE1" style="text-align:center">
+                        薪酬总额
+                    </td>
+                    <td width="138" class="TD_STYLE2">
+                        @Html.TextBoxFor(e => e.salary_sum, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                    </td>
+                    <td width="103" class="TD_STYLE1">
+                        &nbsp;
+                    </td>
+                    <td width="95" height="26" class="TD_STYLE2">
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1" style="text-align:center">
+                        制定人
+                    </td>
+                    <td class="TD_STYLE2">
+                        @Html.TextBoxFor(e => e.designer, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(e => e.designer, null, new { @style = "color:red;font-size:13px;" })
+                    </td>
+                    <td class="TD_STYLE1" style="text-align:center">
+                        复核人
+                    </td>
+                    <td class="TD_STYLE2">
+                        @Html.TextBoxFor(e => e.checker, new { @class = "INPUT_STYLE2", autocomplete = "off" })
+                        @Html.HiddenFor(e => e.register)
+                    </td>
+                    <td class="TD_STYLE1" style="text-align:center">
+                        复核时间
+                    </td>
+                    <td class="TD_STYLE2">
+                        @Html.TextBoxFor(e => e.check_time, new { @class = "INPUT_STYLE2", autocomplete = "off",@readonly = "readonly", })
+                        @Html.HiddenFor(e=>e.regist_time)
+                    </td>
+                    <td class="TD_STYLE1">
+                        &nbsp;
+                    </td>
+                    <td class="TD_STYLE2">
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td class="TD_STYLE1" style="text-align:center">
+                        复核意见
+                    </td>
+                    <td colspan="7" class="TD_STYLE2">
+                        @Html.TextAreaFor(e => e.check_comment, new { @rows = "4", @class = "TEXTAREA_STYLE1" })
+                        @Html.ValidationMessageFor(e => e.check_comment, null, new { @style = "color:red;font-size:13px;" })
+                        @Html.HiddenFor(e => e.remark)
+                    </td>
+                </tr>
+                <tr class="TD_STYLE1">
+                    <td align="center" style="text-align:center">
+                        序号
+                    </td>
+                    <td colspan="3" style="text-align:center">
+                        薪酬项目名称
+                    </td>
+                    <td style="text-align:center">
+                        金额
+                    </td>
+                </tr>
+
+                @for (int i = 0; i < Model.lists.Count; i++)
+                {
+                <tr>
+                    <td align="center">
+                        @Model.lists[i].item_id
+                        @Html.HiddenFor(e=>e.lists[i].sdt_id)
+                        @Html.HiddenFor(e => e.lists[i].item_id)
+                        @Html.HiddenFor(e=>e.lists[i].standard_id)
+                    </td>
+                    <td colspan="3" align="center">
+                        @Model.lists[i].item_name
+                        @Html.HiddenFor(e => e.lists[i].item_name)
+                        @Html.HiddenFor(e => e.lists[i].standard_name)
+
+                    </td>
+                    <td align="center">
+                        @Html.TextBoxFor(e => e.lists[i].salary, new { autocomplete = "off", @class = "INPUT_STYLE2", @onkeyup = "countMoney(" + Model.lists.Count + ",this)", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(e=>e.lists[i].salary,null, new { @style = "color:red;font-size:13px;" })
+                    </td>
+                </tr>
+                }
+            </table>
+        }
+    </div>
+    <script type="text/javascript">
+        function countMoney(obj, o) {
+            if (isNaN(o.value) || o.value < 0) {
+                o.value = "0.00";
+                return;
+            }
+            var sum = 0;
+            for (var i = 0; i < obj; i++) {
+                var salary = document.getElementById("lists_" + i + "__salary").value;
+                if (salary == "") {
+                    salary = "0.00";
+                }
+                sum = Number(sum) + Number(salary);
+
+            }
+            $("#salary_sum").val(sum);
+        }
+
+        function time() {
+            var tdate = document.getElementById("check_time");
+            var d = new Date();
+            var y = d.getFullYear();
+            var moth = d.getMonth() + 1;
+            var date = d.getDate();
+            var h = d.getHours();
+            var m = d.getMinutes();
+            var s = d.getSeconds();
+            var hh = 20 - 1 - h;
+            var mm = 60 - 1 - m;
+            var ss = 60 - s;
+            if (hh > 0) {
+                mm = mm + 60 * hh;
+            }
+            if (moth < 10) {
+                moth = "0" + moth;
+            }
+            if (date < 10) {
+                date = "0" + date;
+            }
+            if (h < 10) {
+                h = "0" + h;
+            }
+            if (m < 10) {
+                m = "0" + m;
+            }
+            if (s < 10) {
+                s = "0" + s;
+            }
+            if (mm < 10) {
+                mm = "0" + mm;
+            }
+            if (ss < 10) {
+                ss = "0" + ss;
+            }
+            tdate.value = y + "-" + moth + "-" + date + " " + h + ":" + m + ":" + s;
+        }
+        window.onload = time;
+        var out = window.setInterval(time, 1000);
+    </script>
+</body >
+</html >

@@ -1,0 +1,81 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+@using HRModel
+@model salary_standardModel
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>salarystandard_query_locate</title>
+
+    <link rel="stylesheet" href="../../css/table.css" type="text/css">
+    <link rel="stylesheet" type="text/css" media="all"
+          href="../../javascript/calendar/calendar-win2k-cold-1.css">
+    <script type="text/javascript" src="../../javascript/calendar/cal.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/comm.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/list.js"></script>
+    <script type="text/javascript" src="../../javascript/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../../javascript/calendar-ch.js"></script>
+    <script type="text/javascript" src="../../javascript/comm/time.js"></script>
+    <link rel="stylesheet" href="../../css/cwcalendar.css" type="text/css">
+</head>
+</head>
+<body>
+    <div>
+        <div>
+            @using (Ajax.BeginForm("salarystandard_query_locate", "salaryCriterion", new AjaxOptions { HttpMethod = "Post" }))
+            {
+                <input type="hidden" name="page.startPage" value="0">
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <font color="black">您正在做的业务是:人力资源管理--薪酬标准管理--薪酬标准变更</font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div align="right">
+                                <input type="submit" value="查询" class="BUTTON_STYLE1" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <table width="100%" border="1" cellpadding=0 cellspacing=1
+                       bordercolorlight=#848284 bordercolordark=#eeeeee
+                       class="TABLE_STYLE1">
+                    <tr>
+                        <td width="20%" class="TD_STYLE1">
+                            请输入薪酬标准编号
+                        </td>
+                        <td class="TD_STYLE2">
+                            @Html.TextBoxFor(e => e.standard_id, new { @class = "INPUT_STYLE1", autocomplete = "off" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            请输入关键字
+                        </td>
+                        <td class="TD_STYLE2">
+                            @Html.TextBoxFor(e => e.primarKey, new { @class = "INPUT_STYLE1", autocomplete = "off" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="TD_STYLE1">
+                            请输入建档时间
+                        </td>
+                        <td width="84%" class="TD_STYLE2">
+                            @Html.TextBoxFor(e => e.startDate, new { @class = "INPUT_STYLE2", autocomplete = "off", onclick = "aa('startDate')", @style = "width:20%" })
+                            至
+                            @Html.TextBoxFor(e => e.endDate, new { @class = "INPUT_STYLE2", autocomplete = "off", onclick = "aa('endDate')", @style = "width:20%" })
+                            （YYYY-MM-DD）
+                        </td>
+                    </tr>
+                </table>
+            }
+        </div>
+    </div>
+</body>
+</html>
