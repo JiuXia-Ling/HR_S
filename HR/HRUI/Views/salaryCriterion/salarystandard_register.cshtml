@@ -75,14 +75,14 @@
                     制定人
                 </td>
                 <td class="TD_STYLE2">
-                    @Html.TextBoxFor(e => e.designer, new { @class = "INPUT_STYLE2", autocomplete = "off"})
-                    @Html.ValidationMessageFor(e => e.designer, null, new { @style = "color:red;font-size:13px;" })
+                    @Html.DropDownListFor(e => e.designer, ViewData["s"] as IEnumerable<SelectListItem>, new { @class = "INPUT_STYLE2", @style = "font-size:13.8px;width:120px;height:26px;float:left;border:2px solid #EEEEEE" })
+                   
                 </td>
                 <td class="TD_STYLE1" style="text-align:center">
                     登记人
                 </td>
-                <td class="TD_STYLE2">
-                    @Html.TextBoxFor(e => e.register, new { @class = "INPUT_STYLE2", autocomplete = "off" })
+                <td class="TD_STYLE2" style="">
+                    @Html.TextBoxFor(e => e.register, new { @class = "INPUT_STYLE2", autocomplete = "off", @readonly = "readonly" })
                     @Html.ValidationMessageFor(e => e.register, null, new { @style = "color:red;font-size:13px;" })
                 </td>
                 <td class="TD_STYLE1" style="text-align:center">

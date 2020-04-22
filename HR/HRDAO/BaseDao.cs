@@ -28,10 +28,10 @@ namespace HRDAO
             //5 从对象上下文移除对象。
             if (ext)
             {
-
                 ObjContext.Detach(objT);
             }
         }
+
         #region 通用添加
         public int Add(T t)
         {
@@ -72,15 +72,7 @@ namespace HRDAO
             return db.Set<T>().Find(obj);
         }
         #endregion
-
-        public List<T> FenYe<K>(Expression<Func<T, bool>> where, Expression<Func<T, K>> order, int currentPage, int pageSize, out int rows)
-        {
-            var data = db.Set<T>().OrderBy(order).Where(where);
-            rows = data.Count();
-            List<T> list = data.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-            return list;
-        }
-
+        
         #region 存储过程通用分页
         public List<T> SelectPageList<T>(string sqlstr, int pageIndex, int pagesize, string orderByField, ref int totalCount) where T : class
         {

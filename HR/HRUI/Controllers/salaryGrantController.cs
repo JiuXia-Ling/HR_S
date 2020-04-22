@@ -40,7 +40,7 @@ namespace HRUI.Controllers
             if (a == "1")
             {
                 List<config_file_first_kindModel> I = icffk.cffkAll();
-                List <human_fileModel> list = Ihd.hfAll().Where(e => e.second_kind_name== null && e.third_kind_name == null&& e.check_status == 2).ToList();
+                List <human_fileModel> list = Ihd.hfAll().Where(e => e.second_kind_name== null && e.third_kind_name == null&& e.check_status == 2.ToString() && e.tiem_statu == 0).ToList();
                 for (int i = 0; i < I.Count; i++)
                 {
                     List<human_fileModel> list1 = list.Where(e => e.first_kind_id == I[i].first_kind_id).ToList();
@@ -69,7 +69,7 @@ namespace HRUI.Controllers
             else if(a == "2")
             {
                 List<config_file_second_kindModel> I = icfsk.All();
-                List<human_fileModel> list = Ihd.hfAll().Where(e => e.third_kind_name == null && e.check_status == 2).ToList();
+                List<human_fileModel> list = Ihd.hfAll().Where(e => e.third_kind_name == null && e.check_status == 2.ToString() && e.tiem_statu == 0).ToList();
                 for (int i = 0; i < I.Count; i++)
                 {
                     List<human_fileModel> list1 = list.Where(e => e.second_kind_id == I[i].second_kind_id).ToList();
@@ -99,7 +99,7 @@ namespace HRUI.Controllers
             else
             {
                 List<config_file_third_kindModel> I = icftk.All();
-                List<human_fileModel> list = Ihd.hfAll().Where(e=>e.check_status==2).ToList();
+                List<human_fileModel> list = Ihd.hfAll().Where(e=>e.check_status=="2" && e.tiem_statu == 0).ToList();
                 for (int i = 0; i < I.Count; i++)
                 {
                     List<human_fileModel> list1 = list.Where(e => e.third_kind_id == I[i].third_kind_id).ToList();
@@ -239,6 +239,57 @@ namespace HRUI.Controllers
                 hf.demand_salaray_sum = list1[0].salary_sum;
                 hf.salary_sum = list1[0].salary_sum;
                 hf.paid_salary_sum = item.salary_paid_sum;
+                hf.human_address = list[0].human_address;
+                hf.human_postcode = list[0].human_postcode;
+                hf.human_pro_designation = list[0].human_pro_designation;
+                hf.human_major_kind_id = list[0].human_major_kind_id;
+                hf.human_major_kind_name = list[0].human_major_kind_name;
+                hf.human_major_id = list[0].human_major_id;
+                hf.human_major_name = list[0].human_major_name;
+                hf.human_telephone = list[0].human_telephone;
+                hf.human_mobilephone = list[0].human_mobilephone;
+                hf.human_bank = list[0].human_bank;
+                hf.human_account = list[0].human_account;
+                hf.human_qq = list[0].human_qq;
+                hf.human_email = list[0].human_email;
+                hf.human_hobby = list[0].human_hobby;
+                hf.human_specility = list[0].human_specility;
+                hf.human_sex = list[0].human_sex;
+                hf.human_religion = list[0].human_religion;
+                hf.human_party = list[0].human_party;
+                hf.human_nationality = list[0].human_nationality;
+                hf.human_race = list[0].human_race;
+                hf.human_birthday = list[0].human_birthday;
+                hf.human_birthplace = list[0].human_birthplace;
+                hf.human_age = list[0].human_age;
+                hf.human_educated_degree = list[0].human_educated_degree;
+                hf.human_educated_years = list[0].human_educated_years;
+                hf.human_educated_major = list[0].human_educated_major;
+                hf.human_society_security_id = list[0].human_society_security_id;
+                hf.human_idcard = list[0].human_idcard;
+                hf.remark = list[0].remark;
+                hf.salary_standard_id = list[0].salary_standard_id;
+                hf.salary_standard_name = list[0].salary_standard_name;
+                hf.major_change_amount = list[0].major_change_amount;
+                hf.bonus_amount = list[0].bonus_amount;
+                hf.training_amount = list[0].training_amount;
+                hf.file_chang_amount = list[0].file_chang_amount;
+                hf.human_histroy_records = list[0].human_histroy_records;
+                hf.human_family_membership = list[0].human_family_membership;
+                hf.human_picture = list[0].human_picture;
+                hf.attachment_name = list[0].attachment_name;
+                hf.check_status = list[0].check_status;
+                hf.register = list[0].register;
+                hf.checker = list[0].checker;
+                hf.changer = list[0].changer;
+                hf.regist_time = list[0].regist_time;
+                hf.check_time = list[0].check_time;
+                hf.change_time = list[0].change_time;
+                hf.lastly_change_time = list[0].lastly_change_time;
+                hf.delete_time = list[0].delete_time;
+                hf.recovery_time = list[0].recovery_time;
+                hf.human_file_status = list[0].human_file_status;
+                hf.tiem_statu =1;
                 Ihd.hfUpd(hf);
             }//foreach循环对人力资源档案对应数据做修改
             int SGNum = sg.salary_grantAdd(hf.list2);
@@ -412,8 +463,10 @@ namespace HRUI.Controllers
         #endregion
         #region MyRegion
         [HttpPost]
-        public ActionResult SelectSGId(int CountIndex, int pageSize)
+        public ActionResult SelectSGId()
         {
+            int CountIndex = Convert.ToInt32(Request["CountIndex"]);
+            int pageSize = Convert.ToInt32(Request["pageSize"]);
             int rows = 0;
             string where = "1=1";
             string salary_grant_id = "";
@@ -436,29 +489,35 @@ namespace HRUI.Controllers
             }
             if (end != "")
             {
-                Time_State = Convert.ToDateTime(Session["SG_End"]);
+                Time_End = Convert.ToDateTime(Session["SG_End"]);
             }
             List<salary_grantModel> list = new List<salary_grantModel>();
             if (Gjz == "")
             {
-                list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where) .Where(e => e.regist_time >= Time_State && e.regist_time <= Time_End && e.salary_grant_id.Contains(salary_grant_id)&&e.check_status==2).ToList();
+                where = $"regist_time>= {Time_State.ToString("yyyy-MM-dd")} AND regist_time<='{Time_End.ToString("yyyy-MM-dd")}' AND salary_grant_id like '%{salary_grant_id}%' AND  check_status=2";
+                list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where);
             }
             else
             {
-                list = null;
-                list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where).Where(e => e.regist_time >= Time_State && e.regist_time <= Time_End && e.salary_grant_id.Contains(salary_grant_id)&&e.first_kind_name.Contains(Gjz) && e.check_status == 2).ToList();//一级机构
                 if (list.Count == 0)
                 {
-                    list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where).Where(e => e.regist_time >= Time_State && e.regist_time <= Time_End && e.salary_grant_id.Contains(salary_grant_id) && e.second_kind_name.Contains(Gjz) && e.check_status == 2).ToList();//二级机构
-                }
-                else if (list.Count == 0)
-                {
-                    list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where).Where(e => e.regist_time >= Time_State && e.regist_time <= Time_End && e.salary_grant_id.Contains(salary_grant_id) && e.third_kind_name.Contains(Gjz) && e.check_status == 2).ToList();//三级机构
+                    where = $"regist_time>= {Time_State.ToString("yyyy-MM-dd")} AND regist_time<='{Time_End.ToString("yyyy-MM-dd")}' AND salary_grant_id like '%{salary_grant_id}%' AND  check_status=2 And first_kind_name like '%{Gjz}%' ";
+                    list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where);//一级机构
+                    if (list.Count == 0)
+                    {
+                        where = $"regist_time>= {Time_State.ToString("yyyy-MM-dd")} AND regist_time<='{Time_End.ToString("yyyy-MM-dd")}' AND salary_grant_id like '%{salary_grant_id}%' AND  check_status=2 And second_kind_name like '%{Gjz}%' ";
+                        list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where);//二级机构
+                        if (list.Count == 0)
+                        {
+                            where = $"regist_time>= {Time_State.ToString("yyyy-MM-dd")} AND regist_time<='{Time_End.ToString("yyyy-MM-dd")}' AND salary_grant_id like '%{salary_grant_id}%' AND  check_status=2 And third_kind_name like '%{Gjz}%' ";
+                            list = sg.salary_grantFy("", CountIndex, pageSize, "", ref rows, where);//三级机构
+                        }
+                    }
                 }
             }
             Dictionary<string, object> dic = new Dictionary<string, object>();
             dic["dt"] = list;
-            dic["rows"] = rows;
+            dic["rows"] = list.Count;
             dic["pages"] = rows % pageSize == 0 ? rows / pageSize : (rows / pageSize) + 1;
             string date = JsonConvert.SerializeObject(dic);
             return Content(date);

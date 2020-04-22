@@ -17,7 +17,7 @@ namespace HREFProject.Configer
             this.Property(e => e.ffk_id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             this.Property(e => e.first_kind_id).HasMaxLength(4);
             this.Property(e => e.first_kind_id).IsOptional();
-            this.Property(e => e.first_kind_name).HasMaxLength(60 );
+            this.Property(e => e.first_kind_name).HasMaxLength(60);
             this.Property(e => e.first_kind_name).IsOptional();
             this.Property(e => e.first_kind_salary_id).HasColumnType("text");
             this.Property(e => e.first_kind_sale_id).HasColumnType("text");

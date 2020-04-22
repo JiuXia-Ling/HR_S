@@ -15,12 +15,16 @@ namespace HRUI.Controllers
         public Isalar_standard_itemBLL sst { get; set; }
         public Isalary_standardBLL ss { get; set; }
         public Isalary_standard_detailsBLL issd { get; set; }
+        public IusersBLL us { get; set; }
         #region 薪酬标准登记
         #region 薪酬标准登记添加页面显示
         [HttpGet]
         public ActionResult salarystandard_register()
         {
             ViewBag.Name = Session["Name"];
+            List<usersModel> list = us.us();
+            SelectList s = new SelectList(list, "u_true_name", "u_true_name");
+            ViewData["s"] = s;
             salary_standardModel model = new salary_standardModel();//对应的实体类
             model.list = sst.sstAll();//给list集合赋值
             string id  = ss.ssAll().Max(e=>e.standard_id);
